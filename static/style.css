@@ -1,0 +1,27 @@
+body{
+ font-family: Arial;
+ background:#111;
+ color:white;
+ text-align:center;
+}
+
+.product{
+ margin:40px;
+ padding:20px;
+ border-radius:12px;
+ background:#222;
+}
+
+model-viewer{
+ width:90%;
+ height:420px;
+ background:black;
+}
+
+button{
+ padding:10px 20px;
+ border:none;
+ background:#00c3ff;
+ border-radius:8px;
+ font-size:16px;
+}

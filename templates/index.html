@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+
+<script type="module"
+src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+</script>
+
+<link rel="stylesheet" href="/static/style.css">
+
+<title>AR Product Viewer</title>
+</head>
+
+<body>
+
+<h1>📱 AR Product Viewer</h1>
+
+<a href="/admin">Upload Product</a>
+
+{% for p in products %}
+<div class="product">
+
+<h2>{{p[1]}}</h2>
+
+<model-viewer
+src="/uploads/{{p[2]}}"
+ar
+ar-modes="webxr scene-viewer quick-look"
+camera-controls
+auto-rotate>
+
+<button slot="ar-button">
+View in AR 🚀
+</button>
+
+</model-viewer>
+
+</div>
+{% endfor %}
+
+</body>
+</html>

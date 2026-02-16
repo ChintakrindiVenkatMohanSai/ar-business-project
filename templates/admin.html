@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload AR Product</title>
+</head>
+
+<body>
+
+<h2>Upload AR Product</h2>
+
+<form action="/upload-model"
+method="POST"
+enctype="multipart/form-data">
+
+Product Name:
+<input name="name" required>
+
+<br><br>
+
+3D Model (.glb recommended):
+<input type="file" name="file" required>
+
+<br><br>
+
+<button>Upload</button>
+
+</form>
+
+<br>
+<a href="/">Back to Products</a>
+
+</body>
+</html>
