@@ -2,134 +2,42 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Custom AR Viewer</title>
 
-<script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/webxr/ARButton.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/loaders/GLTFLoader.js"></script>
+<script type="module"
+src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
+</script>
 
-<style>
-body{
- margin:0;
- overflow:hidden;
- font-family:Arial;
-}
-</style>
+<link rel="stylesheet" href="/static/style.css">
+
+<title>AR Product Viewer</title>
 </head>
 
 <body>
 
-<script>
-let camera, scene, renderer, model;
-let hitTestSource=null;
-let hitTestSourceRequested=false;
-let startX=0, rotation=0;
+<h1>📱 AR Product Viewer</h1>
 
-init();
-animate();
+<a href="/admin">Upload Product</a>
 
-function init(){
+{% for p in products %}
+<div class="product">
 
- scene=new THREE.Scene();
- camera=new THREE.PerspectiveCamera();
+<h2>{{p[1]}}</h2>
 
- renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
- renderer.setSize(window.innerWidth,window.innerHeight);
- renderer.xr.enabled=true;
+<model-viewer
+src="/uploads/{{p[2]}}"
+ar
+ar-modes="webxr scene-viewer quick-look"
+camera-controls
+auto-rotate>
 
- document.body.appendChild(renderer.domElement);
+<button slot="ar-button">
+View in AR 🚀
+</button>
 
- document.body.appendChild(
-  ARButton.createButton(renderer,{
-   requiredFeatures:['hit-test']
-  })
- );
+</model-viewer>
 
- const light=new THREE.HemisphereLight(0xffffff,0xbbbbff,1);
- scene.add(light);
-
- // LOAD MODEL
- const loader=new THREE.GLTFLoader();
- loader.load(
-  "/uploads/Astronaut (1).glb", // <-- PUT YOUR MODEL NAME HERE
-  gltf=>{
-   model=gltf.scene;
-   model.scale.set(0.5,0.5,0.5);
-   model.visible=false;
-   scene.add(model);
-  }
- );
-
- // DRAG ROTATION
- renderer.domElement.addEventListener("touchstart",e=>{
-  startX=e.touches[0].clientX;
- });
-
- renderer.domElement.addEventListener("touchmove",e=>{
-  if(model && model.visible){
-   let dx=e.touches[0].clientX-startX;
-   rotation+=dx*0.01;
-   model.rotation.y=rotation;
-   startX=e.touches[0].clientX;
-  }
- });
-
-}
-
-function animate(){
- renderer.setAnimationLoop(render);
-}
-
-function render(timestamp,frame){
-
- if(frame){
-
-  const referenceSpace=renderer.xr.getReferenceSpace();
-  const session=renderer.xr.getSession();
-
-  if(!hitTestSourceRequested){
-
-   session.requestReferenceSpace('viewer').then(space=>{
-    session.requestHitTestSource({space}).then(source=>{
-     hitTestSource=source;
-    });
-   });
-
-   session.addEventListener('end',()=>{
-    hitTestSourceRequested=false;
-    hitTestSource=null;
-   });
-
-   hitTestSourceRequested=true;
-  }
-
-  if(hitTestSource){
-
-   const hitTestResults=frame.getHitTestResults(hitTestSource);
-
-   if(hitTestResults.length>0){
-
-    const hit=hitTestResults[0];
-    const pose=hit.getPose(referenceSpace);
-
-    if(model && !model.visible){
-     model.visible=true;
-     model.position.set(
-      pose.transform.position.x,
-      pose.transform.position.y,
-      pose.transform.position.z
-     );
-    }
-
-   }
-
-  }
-
- }
-
- renderer.render(scene,camera);
-}
-</script>
+</div>
+{% endfor %}
 
 </body>
 </html>
