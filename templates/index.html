@@ -24,11 +24,15 @@ src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
 <h2>{{p[1]}}</h2>
 
 <model-viewer
-src="/uploads/{{p[2]}}"
-ar
-ar-modes="webxr scene-viewer quick-look"
-camera-controls
-auto-rotate>
+ src="/uploads/Astronaut.glb"
+ ar
+ ar-modes="webxr scene-viewer quick-look"
+ camera-controls
+ auto-rotate
+ interaction-prompt="auto"
+ touch-action="pan-y"
+ rotation-per-second="30deg"
+ shadow-intensity="1">
 
 <button slot="ar-button">
 View in AR 🚀
