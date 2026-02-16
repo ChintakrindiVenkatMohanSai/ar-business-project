@@ -2,106 +2,85 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Mobile AR Viewer</title>
+<title>Custom AR Viewer</title>
 
-<script type="module"
-src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
-</script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/webxr/ARButton.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/loaders/GLTFLoader.js"></script>
 
 <style>
 body{
  margin:0;
- background:black;
- color:white;
- text-align:center;
+ overflow:hidden;
  font-family:Arial;
-}
-
-h2{
- padding:15px;
-}
-
-model-viewer{
- width:100%;
- height:80vh;
- background:black;
-}
-
-button{
- padding:10px 18px;
- margin:8px;
- border:none;
- border-radius:8px;
- background:#00c3ff;
- color:white;
- font-size:16px;
 }
 </style>
 </head>
 
 <body>
 
-<h2>📱 View 3D Model in Your Room</h2>
-
-{% for p in products %}
-<div class="product">
-
-<h2>{{p[1]}}</h2>
-
-<model-viewer
- id="mv{{loop.index}}"
- src="/uploads/{{p[2]}}"
- ar
- ar-modes="webxr scene-viewer quick-look"
- camera-controls
- touch-action="pan-y"
- interaction-prompt="auto"
- exposure="1"
- shadow-intensity="1"
- environment-image="neutral"
- style="width:100%;height:400px;background:black;">
-
-<button slot="ar-button">
-View in AR 🚀
-</button>
-
-</model-viewer>
-
-<br>
-
-<button onclick="rotateX('mv{{loop.index}}',-20)">⬆️ Up</button>
-<button onclick="rotateX('mv{{loop.index}}',20)">⬇️ Down</button>
-<button onclick="rotateY('mv{{loop.index}}',-20)">⬅️ Left</button>
-<button onclick="rotateY('mv{{loop.index}}',20)">➡️ Right</button>
-<button onclick="resetRotation('mv{{loop.index}}')">Reset 🔄</button>
-
-</div>
-{% endfor %}
-
 <script>
-let rotations={};
+let camera, scene, renderer, model;
+let controller;
+let reticle;
 
-function update(id){
- let r = rotations[id];
- document.getElementById(id).orientation =
-   `${r.x}deg ${r.y}deg ${r.z}deg`;
+let startX=0, rotation=0;
+
+init();
+animate();
+
+function init(){
+
+ scene=new THREE.Scene();
+ camera=new THREE.PerspectiveCamera();
+
+ renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
+ renderer.setSize(window.innerWidth,window.innerHeight);
+ renderer.xr.enabled=true;
+
+ document.body.appendChild(renderer.domElement);
+
+ document.body.appendChild(
+  ARButton.createButton(renderer,{requiredFeatures:['hit-test']})
+ );
+
+ const light=new THREE.HemisphereLight(0xffffff,0xbbbbff,1);
+ scene.add(light);
+
+ // LOAD MODEL
+ const loader=new THREE.GLTFLoader();
+ loader.load(
+  "/uploads/model.glb", // CHANGE MODEL PATH
+  gltf=>{
+   model=gltf.scene;
+   model.scale.set(0.5,0.5,0.5);
+   model.visible=false;
+   scene.add(model);
+  }
+ );
+
+ // TOUCH ROTATION
+ renderer.domElement.addEventListener("touchstart",e=>{
+  startX=e.touches[0].clientX;
+ });
+
+ renderer.domElement.addEventListener("touchmove",e=>{
+  if(model){
+   let dx=e.touches[0].clientX-startX;
+   rotation+=dx*0.01;
+   model.rotation.y=rotation;
+   startX=e.touches[0].clientX;
+  }
+ });
+
 }
 
-function rotateX(id,val){
- if(!rotations[id]) rotations[id]={x:0,y:0,z:0};
- rotations[id].x+=val;
- update(id);
+function animate(){
+ renderer.setAnimationLoop(render);
 }
 
-function rotateY(id,val){
- if(!rotations[id]) rotations[id]={x:0,y:0,z:0};
- rotations[id].y+=val;
- update(id);
-}
-
-function resetRotation(id){
- rotations[id]={x:0,y:0,z:0};
- update(id);
+function render(){
+ renderer.render(scene,camera);
 }
 </script>
 
