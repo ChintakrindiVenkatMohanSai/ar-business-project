@@ -6,7 +6,7 @@
 <style>
 body{
     margin:0;
-    font-family:Arial, Helvetica, sans-serif;
+    font-family:Arial;
     background:#0f172a;
     color:white;
     display:flex;
@@ -14,74 +14,43 @@ body{
     align-items:center;
     height:100vh;
 }
-
 .container{
     background:#1e293b;
     padding:40px;
     border-radius:12px;
     width:400px;
-    box-shadow:0 0 25px rgba(0,0,0,0.5);
     text-align:center;
 }
-
-h2{
-    margin-bottom:25px;
-}
-
-input[type="text"],
-input[type="file"]{
+input,button{
     width:100%;
     padding:12px;
-    margin-top:8px;
-    margin-bottom:18px;
+    margin-top:10px;
     border:none;
     border-radius:8px;
-    background:#334155;
-    color:white;
 }
-
 button{
-    width:100%;
-    padding:12px;
-    border:none;
-    border-radius:8px;
     background:#06b6d4;
     color:white;
-    font-size:16px;
-    cursor:pointer;
-    transition:0.3s;
-}
-
-button:hover{
-    background:#0891b2;
-}
-
-a{
-    color:#38bdf8;
-    text-decoration:none;
-}
-
-a:hover{
-    text-decoration:underline;
 }
 </style>
 
 </head>
-
 <body>
 
 <div class="container">
 
 <h2>Upload AR Product</h2>
 
-<form action="/upload-model"
-method="POST"
+<form action="/upload-model" method="POST"
 enctype="multipart/form-data">
 
-Product Name:
-<input type="text" name="name" required>
+<input type="text" name="name" placeholder="Product Name" required>
 
-3D Model (.glb recommended):
+<select name="type">
+    <option value="model">3D Model</option>
+    <option value="image">Image / Document AR</option>
+</select>
+
 <input type="file" name="file" required>
 
 <button>Upload</button>
@@ -89,7 +58,7 @@ Product Name:
 </form>
 
 <br>
-<a href="/">⬅ Back to Products</a>
+<a href="/">⬅ Back</a>
 
 </div>
 
