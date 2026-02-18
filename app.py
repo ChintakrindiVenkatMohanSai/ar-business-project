@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, jsonify, send_from_directory
+from flask import Flask, render_template, request, redirect, send_from_directory
 import sqlite3
 import os
 
@@ -15,7 +15,8 @@ def init_db():
         CREATE TABLE IF NOT EXISTS products(
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             name TEXT,
-            model TEXT
+            file TEXT,
+            type TEXT
         )
     """)
     conn.close()
@@ -39,22 +40,23 @@ def admin():
     return render_template("admin.html")
 
 
-# ---------- UPLOAD MODEL ----------
+# ---------- UPLOAD FILE ----------
 @app.route("/upload-model", methods=["POST"])
 def upload_model():
     name = request.form["name"]
+    file_type = request.form["type"]
     file = request.files["file"]
 
     if not file:
-        return "No file"
+        return "No file uploaded"
 
     path = os.path.join(UPLOAD_FOLDER, file.filename)
     file.save(path)
 
     conn = sqlite3.connect("products.db")
     conn.execute(
-        "INSERT INTO products(name,model) VALUES(?,?)",
-        (name, file.filename)
+        "INSERT INTO products(name,file,type) VALUES(?,?,?)",
+        (name, file.filename, file_type)
     )
     conn.commit()
     conn.close()
@@ -62,7 +64,7 @@ def upload_model():
     return redirect("/")
 
 
-# ---------- SERVE MODELS ----------
+# ---------- SERVE UPLOADS ----------
 @app.route("/uploads/<filename>")
 def uploaded_file(filename):
     return send_from_directory(UPLOAD_FOLDER, filename)
