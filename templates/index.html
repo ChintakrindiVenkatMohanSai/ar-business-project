@@ -23,21 +23,59 @@ src="https://unpkg.com/@google/model-viewer/dist/model-viewer.min.js">
 
 <h2>{{p[1]}}</h2>
 
+{% if p[3]=='model' %}
+<!-- 3D AR -->
 <model-viewer
 src="/uploads/{{p[2]}}"
 ar
-ar-modes="webxr scene-viewer quick-look"
 camera-controls
 auto-rotate>
 
 <button slot="ar-button">
-View in AR 🚀
+View 3D AR 🚀
 </button>
 
 </model-viewer>
 
+{% else %}
+<!-- IMAGE AR CAMERA -->
+<button onclick="startImageAR('/uploads/{{p[2]}}')">
+Start Image AR 📷
+</button>
+{% endif %}
+
 </div>
 {% endfor %}
 
+<script>
+async function startImageAR(img){
+
+const stream = await navigator.mediaDevices.getUserMedia({
+    video:{ facingMode:"environment" }
+});
+
+let video=document.createElement("video");
+video.srcObject=stream;
+video.autoplay=true;
+video.style.position="fixed";
+video.style.top="0";
+video.style.left="0";
+video.style.width="100%";
+video.style.height="100%";
+video.style.objectFit="cover";
+document.body.appendChild(video);
+
+let overlay=document.createElement("img");
+overlay.src=img;
+overlay.style.position="fixed";
+overlay.style.width="300px";
+overlay.style.bottom="50px";
+overlay.style.left="50%";
+overlay.style.transform="translateX(-50%)";
+overlay.style.zIndex="999";
+document.body.appendChild(overlay);
+
+}
+</script>
 </body>
 </html>
